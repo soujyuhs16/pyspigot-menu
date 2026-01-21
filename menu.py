@@ -46,7 +46,8 @@ def translate_color_codes(text):
 def create_item(material_name, display_name, lore=None, amount=1):
     """Create an ItemStack with display name and lore"""
     try:
-        material = Material.getMaterial(material_name)
+        # Use matchMaterial for better compatibility with newer Bukkit versions
+        material = Material.matchMaterial(material_name)
         if material is None:
             ps.logger.warning(f"Invalid material: {material_name}")
             material = Material.STONE
@@ -128,8 +129,10 @@ def handle_menu_click(event):
                 action_type = action.get("type", "")
                 action_value = action.get("value", "")
                 
-                # Replace placeholders
-                action_value = action_value.replace("{player}", player.getName())
+                # Replace placeholders with sanitized values
+                # Sanitize player name to prevent command injection
+                safe_player_name = player.getName().replace(";", "").replace("&", "").replace("|", "")
+                action_value = action_value.replace("{player}", safe_player_name)
                 location = player.getLocation()
                 location_str = f"{location.getBlockX()}, {location.getBlockY()}, {location.getBlockZ()}"
                 action_value = action_value.replace("{location}", location_str)
@@ -138,8 +141,9 @@ def handle_menu_click(event):
                 if action_type == "message":
                     player.sendMessage(translate_color_codes(action_value))
                 elif action_type == "command":
-                    # Execute as console command
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action_value)
+                    # Execute command as player (not console) for security
+                    # This prevents privilege escalation through menu configuration
+                    Bukkit.dispatchCommand(player, action_value)
                     player.sendMessage(translate_color_codes("&aCommand executed!"))
                 elif action_type == "close":
                     player.closeInventory()
@@ -169,7 +173,8 @@ def on_player_interact(event):
         return
     
     # Check if player is holding a clock
-    item = player.getItemInHand()
+    # Use getInventory().getItemInMainHand() for better compatibility with newer versions
+    item = player.getInventory().getItemInMainHand()
     if item is None or item.getType() != Material.CLOCK:
         return
     

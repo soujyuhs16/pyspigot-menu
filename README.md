@@ -129,6 +129,13 @@ Note: Requires OP permissions
 - PySpigot plugin
 - Python 3.x (via PySpigot)
 
+## Security Notes
+
+- Commands in the menu.json are executed with the player's permissions (not console/operator permissions) to prevent privilege escalation.
+- Player names in placeholders are sanitized to prevent command injection.
+- Only server administrators should have access to modify the menu.json file.
+- The `/menu` command requires OP permissions by default.
+
 ## License
 
 This project is open source and available under the MIT License.
