@@ -1,0 +1,118 @@
+{
+  "title": "&6&lServer Menu",
+  "size": 27,
+  "items": [
+    {
+      "slot": 10,
+      "material": "COMPASS",
+      "display_name": "&b&lTeleport Hub",
+      "lore": [
+        "&7Teleport to the server hub",
+        "&7",
+        "&eClick to teleport!"
+      ],
+      "action": {
+        "type": "command",
+        "value": "spawn"
+      }
+    },
+    {
+      "slot": 11,
+      "material": "PLAYER_HEAD",
+      "display_name": "&a&lPlayer Stats",
+      "lore": [
+        "&7View your player statistics",
+        "&7",
+        "&7Player: &f{player}",
+        "&7Location: &f{location}"
+      ],
+      "action": {
+        "type": "message",
+        "value": "&a&l===== Player Stats =====\n&7Name: &f{player}\n&7Location: &f{location}\n&7World: &fworld"
+      }
+    },
+    {
+      "slot": 12,
+      "material": "ENDER_PEARL",
+      "display_name": "&d&lRandom Teleport",
+      "lore": [
+        "&7Teleport to a random location",
+        "&7",
+        "&cCaution: May be dangerous!"
+      ],
+      "action": {
+        "type": "command",
+        "value": "rtp {player}"
+      }
+    },
+    {
+      "slot": 13,
+      "material": "DIAMOND",
+      "display_name": "&b&lReward Kit",
+      "lore": [
+        "&7Receive a starter kit",
+        "&7",
+        "&aContains:",
+        "&7- 10x Diamond",
+        "&7- 5x Golden Apple"
+      ],
+      "action": {
+        "type": "command",
+        "value": "give {player} diamond 10"
+      }
+    },
+    {
+      "slot": 14,
+      "material": "EMERALD",
+      "display_name": "&a&lDaily Bonus",
+      "lore": [
+        "&7Claim your daily bonus",
+        "&7",
+        "&a+10 Emeralds"
+      ],
+      "action": {
+        "type": "command",
+        "value": "give {player} emerald 10"
+      }
+    },
+    {
+      "slot": 15,
+      "material": "BOOK",
+      "display_name": "&e&lServer Rules",
+      "lore": [
+        "&7View server rules and guidelines",
+        "&7",
+        "&eClick to view!"
+      ],
+      "action": {
+        "type": "message",
+        "value": "&e&l===== Server Rules =====\n&71. Be respectful to all players\n&72. No griefing or stealing\n&73. No cheating or hacking\n&74. Have fun!"
+      }
+    },
+    {
+      "slot": 16,
+      "material": "NETHER_STAR",
+      "display_name": "&6&lVIP Menu",
+      "lore": [
+        "&7Access VIP features",
+        "&7",
+        "&cRequires VIP rank"
+      ],
+      "action": {
+        "type": "message",
+        "value": "&cThis feature requires VIP rank! Visit our store to upgrade."
+      }
+    },
+    {
+      "slot": 22,
+      "material": "BARRIER",
+      "display_name": "&c&lClose Menu",
+      "lore": [
+        "&7Click to close this menu"
+      ],
+      "action": {
+        "type": "close"
+      }
+    }
+  ]
+}
