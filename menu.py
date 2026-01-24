@@ -164,12 +164,10 @@ def go_back(player):
     # Remove current menu from stack
     player_menu_stack[player_uuid].pop()
     
-    # If stack is empty or has only one item (main menu), close
-    if len(player_menu_stack[player_uuid]) <= 1:
+    # If stack is now empty, close and clear
+    if len(player_menu_stack[player_uuid]) == 0:
         player.closeInventory()
-        # Clear the stack
-        if player_uuid in player_menu_stack:
-            player_menu_stack[player_uuid] = []
+        player_menu_stack[player_uuid] = []
     else:
         # Open previous menu
         previous_menu = player_menu_stack[player_uuid][-1]
@@ -236,7 +234,7 @@ def on_inventory_click(event):
         player.closeInventory()
         
         # Send message if configured
-        if messages['command-message']:
+        if 'command-message' in messages and messages['command-message']:
             player.sendMessage(messages['command-message'])
         
         # Execute commands
