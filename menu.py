@@ -234,8 +234,9 @@ def on_inventory_click(event):
         player.closeInventory()
         
         # Send message if configured
-        if 'command-message' in messages and messages['command-message']:
-            player.sendMessage(messages['command-message'])
+        command_msg = messages.get('command-message')
+        if command_msg:
+            player.sendMessage(command_msg)
         
         # Execute commands
         execute_commands(player, commands)
