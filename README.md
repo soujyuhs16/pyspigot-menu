@@ -111,3 +111,39 @@ The default configuration includes a three-level menu structure:
 - The menu automatically cleans up player state when they quit
 - All open menus are closed when the script is stopped/reloaded
 - Color codes support Minecraft's `&` format (e.g., `&a` for green)
+
+## Web 编辑器 / Web Editor
+
+本项目提供了一个在线图形化编辑器，用于方便地创建和编辑 `menu.yml` 配置文件。
+
+### 功能特性
+
+- ✅ 导入/导出 YAML 配置文件
+- ✅ 可视化的槽位网格编辑
+- ✅ 多级菜单管理和关系查看
+- ✅ 智能配置验证（循环引用、孤儿菜单等）
+- ✅ 支持扩展字段（如 close-on-click、sound 等）
+- ✅ 完全中文界面
+
+### 在线使用
+
+访问 [PySpigot Menu 编辑器](https://soujyuhs16.github.io/pyspigot-menu/) 在线使用。
+
+### 本地开发
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+访问 http://localhost:5173 即可使用。
+
+### 构建和部署
+
+```bash
+cd web
+npm run build
+```
+
+更多详细信息请查看 [web/README.md](web/README.md)。
