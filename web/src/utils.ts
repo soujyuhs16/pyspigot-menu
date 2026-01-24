@@ -10,16 +10,19 @@ export function parseYAML(content: string): MenuConfig {
   }
 }
 
+// YAML 序列化选项常量
+const YAML_STRINGIFY_OPTIONS = {
+  defaultKeyType: 'PLAIN' as const,
+  defaultStringType: 'QUOTE_DOUBLE' as const,
+  lineWidth: 0  // 禁用行宽限制
+};
+
 export function stringifyYAML(config: MenuConfig): string {
   // 确保 slot keys 保持为字符串
   const processedConfig = JSON.parse(JSON.stringify(config));
   
   // 使用 yaml 的 stringify 选项确保数字键保持为字符串
-  return yaml.stringify(processedConfig, {
-    defaultKeyType: 'PLAIN',
-    defaultStringType: 'QUOTE_DOUBLE',
-    lineWidth: 0
-  });
+  return yaml.stringify(processedConfig, YAML_STRINGIFY_OPTIONS);
 }
 
 export function validateMenu(menuId: string, menu: Menu, allMenus: Record<string, Menu>): ValidationError[] {

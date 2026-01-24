@@ -137,12 +137,15 @@ function App() {
   const handleUpdateMenu = (updates: Partial<Menu>) => {
     if (!selectedMenuId || !config) return;
 
+    const currentMenu = config.menus[selectedMenuId];
+    if (!currentMenu) return;
+
     setConfig({
       ...config,
       menus: {
         ...config.menus,
         [selectedMenuId]: {
-          ...config.menus[selectedMenuId],
+          ...currentMenu,
           ...updates
         }
       }
@@ -459,12 +462,19 @@ function ItemEditor({ item, allMenus, onUpdate, onDelete }: ItemEditorProps) {
 
   const handleSave = () => {
     try {
-      // 合并高级字段
+      // 验证并合并高级字段
       const advanced = JSON.parse(advancedJson);
+      
+      // 基本验证：确保是对象类型
+      if (typeof advanced !== 'object' || advanced === null || Array.isArray(advanced)) {
+        alert('高级字段必须是有效的 JSON 对象');
+        return;
+      }
+      
       const merged = { ...editingItem, ...advanced };
       onUpdate(merged);
     } catch (error) {
-      alert('高级字段 JSON 格式错误');
+      alert('高级字段 JSON 格式错误: ' + (error instanceof Error ? error.message : String(error)));
     }
   };
 
