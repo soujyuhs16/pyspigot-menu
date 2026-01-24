@@ -1,0 +1,3 @@
+main: 'main.py'
+enabled: true
+file-logging-enabled: true

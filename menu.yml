@@ -8,7 +8,7 @@ menus:
   main:
     inventory:
       size: 27
-      title: '&e&lMain Menu'
+      title: '&e&l主菜单'
     items:
       '10':
         item:
