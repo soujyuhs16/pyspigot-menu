@@ -1,0 +1,261 @@
+# Multi-level Menu Configuration
+# Format: menus.<menuId>.inventory.size/title
+#         menus.<menuId>.items."<slot>".item (material/amount/name/lore/glowing)
+#         menus.<menuId>.items."<slot>".permission (optional)
+#         menus.<menuId>.items."<slot>".action.type (open|command|back)
+
+menus:
+  main:
+    inventory:
+      size: 27
+      title: '&e&lMain Menu'
+    items:
+      '10':
+        item:
+          material: 'ENDER_PEARL'
+          amount: 1
+          name: '&a&lTeleport Menu'
+          lore:
+            - '&7Click to open teleport options'
+            - '&6Warp to various locations'
+          glowing: true
+        action:
+          type: 'open'
+          menu: 'teleport'
+      '12':
+        item:
+          material: 'COMMAND_BLOCK'
+          amount: 1
+          name: '&c&lCommands Menu'
+          lore:
+            - '&7Click to see available commands'
+            - '&6Execute useful commands'
+        action:
+          type: 'open'
+          menu: 'commands'
+      '14':
+        item:
+          material: 'COMPASS'
+          amount: 1
+          name: '&b&lServer Info'
+          lore:
+            - '&7Get server information'
+        action:
+          type: 'command'
+          commands:
+            - 'help'
+        permission: 'menu.info'
+      '22':
+        item:
+          material: 'BARRIER'
+          amount: 1
+          name: '&c&lClose Menu'
+          lore:
+            - '&7Click to close this menu'
+        action:
+          type: 'back'
+
+  teleport:
+    inventory:
+      size: 27
+      title: '&a&lTeleport Menu'
+    items:
+      '10':
+        item:
+          material: 'ENDER_PEARL'
+          amount: 1
+          name: '&e&lSpawn'
+          lore:
+            - '&7Teleport to spawn point'
+          glowing: true
+        action:
+          type: 'command'
+          commands:
+            - 'spawn'
+      '11':
+        item:
+          material: 'BEACON'
+          amount: 1
+          name: '&d&lLandmarks'
+          lore:
+            - '&7Click to see famous landmarks'
+            - '&6Explore various locations'
+        action:
+          type: 'open'
+          menu: 'landmarks'
+      '12':
+        item:
+          material: 'EMERALD'
+          amount: 1
+          name: '&2&lShop Area'
+          lore:
+            - '&7Teleport to shopping district'
+        action:
+          type: 'command'
+          commands:
+            - 'warp shop'
+        permission: 'menu.warp.shop'
+      '13':
+        item:
+          material: 'DIAMOND_SWORD'
+          amount: 1
+          name: '&c&lPvP Arena'
+          lore:
+            - '&7Teleport to PvP arena'
+        action:
+          type: 'command'
+          commands:
+            - 'warp pvp'
+        permission: 'menu.warp.pvp'
+      '22':
+        item:
+          material: 'ARROW'
+          amount: 1
+          name: '&e&lBack'
+          lore:
+            - '&7Return to main menu'
+        action:
+          type: 'back'
+
+  landmarks:
+    inventory:
+      size: 27
+      title: '&d&lFamous Landmarks'
+    items:
+      '10':
+        item:
+          material: 'RED_CONCRETE'
+          amount: 1
+          name: '&c&lRed Tower'
+          lore:
+            - '&7A magnificent red tower'
+            - '&6Built by the community'
+        action:
+          type: 'command'
+          commands:
+            - 'warp redtower'
+      '11':
+        item:
+          material: 'BLUE_CONCRETE'
+          amount: 1
+          name: '&9&lBlue Castle'
+          lore:
+            - '&7An ancient blue castle'
+            - '&6Historic landmark'
+        action:
+          type: 'command'
+          commands:
+            - 'warp bluecastle'
+      '12':
+        item:
+          material: 'GOLD_BLOCK'
+          amount: 1
+          name: '&6&lGolden Temple'
+          lore:
+            - '&7Sacred golden temple'
+            - '&6Place of worship'
+        action:
+          type: 'command'
+          commands:
+            - 'warp temple'
+        permission: 'menu.warp.temple'
+      '13':
+        item:
+          material: 'JUNGLE_SAPLING'
+          amount: 1
+          name: '&a&lVillage Center'
+          lore:
+            - '&7Main village square'
+            - '&6Meet other players'
+        action:
+          type: 'command'
+          commands:
+            - 'warp village'
+      '22':
+        item:
+          material: 'ARROW'
+          amount: 1
+          name: '&e&lBack'
+          lore:
+            - '&7Return to teleport menu'
+        action:
+          type: 'back'
+
+  commands:
+    inventory:
+      size: 27
+      title: '&c&lCommands Menu'
+    items:
+      '10':
+        item:
+          material: 'BOOK'
+          amount: 1
+          name: '&e&lHelp'
+          lore:
+            - '&7View help information'
+        action:
+          type: 'command'
+          commands:
+            - 'help'
+      '11':
+        item:
+          material: 'PLAYER_HEAD'
+          amount: 1
+          name: '&b&lList Players'
+          lore:
+            - '&7See who is online'
+        action:
+          type: 'command'
+          commands:
+            - 'list'
+      '12':
+        item:
+          material: 'CLOCK'
+          amount: 1
+          name: '&6&lSet Day'
+          lore:
+            - '&7Change time to day'
+        action:
+          type: 'command'
+          commands:
+            - 'time set day'
+        permission: 'menu.command.time'
+      '13':
+        item:
+          material: 'SUNFLOWER'
+          amount: 1
+          name: '&a&lClear Weather'
+          lore:
+            - '&7Make it sunny'
+        action:
+          type: 'command'
+          commands:
+            - 'weather clear'
+        permission: 'menu.command.weather'
+      '14':
+        item:
+          material: 'IRON_PICKAXE'
+          amount: 1
+          name: '&7&lMulti-Command Test'
+          lore:
+            - '&7Execute multiple commands'
+            - '&6This will run 2 commands'
+        action:
+          type: 'command'
+          commands:
+            - 'me is using the menu'
+            - 'help'
+      '22':
+        item:
+          material: 'ARROW'
+          amount: 1
+          name: '&e&lBack'
+          lore:
+            - '&7Return to main menu'
+        action:
+          type: 'back'
+
+misc:
+  command-message: '&6Executing command...'
+  no-permission: '&cYou do not have permission to use this item!'
+  only-player: '&cThis command can only be executed by players!'
