@@ -1,82 +1,108 @@
-# PySpigot Menu
+# PySpigot Menu（多级箱子菜单）
 
-A flexible multi-level menu plugin for PySpigot that allows you to create custom chest GUI menus with multiple levels, command execution, and permission support.
+这是一个基于 **PySpigot** 的多级菜单（Chest GUI）脚本插件：通过一个可配置的 `menu.yml`，你可以快速创建“主菜单 → 子菜单 → 更深层子菜单”的无限层级 GUI，并支持点击执行命令、返回上一层、以及每个物品单独的权限控制。
 
-## Features
+---
 
-- **Multi-level Menus**: Create nested menus with unlimited depth
-- **Three Action Types**:
-  - `open`: Open a submenu
-  - `command`: Execute one or multiple commands as the player
-  - `back`: Return to the previous menu or close if at the root
-- **Permission Support**: Optional per-item permission checks
-- **Navigation Stack**: Automatically tracks menu navigation for seamless back navigation
-- **Conflict Prevention**: Uses title prefix `[Menu]` to avoid conflicts with other plugins
+## 功能特性
 
-## Commands
+- **多级菜单**：支持无限层级嵌套（主菜单 → 子菜单 → 子子菜单……）
+- **三种动作类型（Action）**
+  - `open`：打开子菜单
+  - `command`：以玩家身份执行一条或多条命令
+  - `back`：返回上一层；如果当前是根菜单（main），则关闭菜单
+- **物品独立权限**：每个菜单项可单独配置 `permission:`（可选）
+- **导航栈**：自动记录玩家的菜单打开顺序，实现自然的“返回”
+- **冲突避免**：菜单标题会加上 `[Menu]` 前缀，避免与其它插件的 GUI 标题冲突
+- **防止拿取物品**：玩家无法从菜单里拖走/拿走物品（点击已取消）
 
-- `/menu` - Open the main menu
-  - Aliases: `/m`, `/gui`
-  - Permission: `menu.command`
+---
 
-## Configuration
+## 命令
 
-The plugin uses `menu.yml` for configuration. Here's the structure:
+- `/menu`：打开主菜单（root menu）
+  - 别名：`/m`、`/gui`（如果你的脚本中有配置）
+  - 权限：`menu.command`
 
-### Menu Structure
+> 注意：`/menu` 是否需要权限、别名有哪些，以你当前脚本实际注册为准。
+
+---
+
+## 配置文件位置（重要）
+
+本脚本通过 `ps.config.loadConfig('menu.yml')` 读取配置。**PySpigot 默认会从以下目录加载：**
+
+- `plugins/PySpigot/config/menu.yml`
+
+请务必将 `menu.yml` 放到上述目录。  
+如果把 `menu.yml` 放在 `plugins/PySpigot/projects/menu/`（项目目录）下，脚本通常 **不会自动读到**，从而导致 `menus` / `misc` 读取为空，出现报错或菜单无法打开。
+
+---
+
+## 配��格式说明（menu.yml）
+
+### 1) 基本结构
 
 ```yaml
 menus:
   <menu_id>:
     inventory:
-      size: 27  # Must be multiple of 9 (9, 18, 27, 36, 45, 54)
+      size: 27         # 必须是 9 的倍数：9/18/27/36/45/54
       title: '&e&lMenu Title'
     items:
-      '<slot>':  # Slot number (0-based)
+      '<slot>':        # 槽位（从 0 开始）
         item:
           material: 'DIAMOND'
           amount: 1
           name: '&a&lItem Name'
           lore:
-            - '&7Line 1 of lore'
-            - '&7Line 2 of lore'
-          glowing: true  # Optional, adds enchantment glow
-        permission: 'menu.example'  # Optional
+            - '&7第一行 lore'
+            - '&7第二行 lore'
+          glowing: true     # 可选：发光效果（通过附魔隐藏实现）
+        permission: 'menu.example'  # 可选：没有则不限制
         action:
           type: 'open|command|back'
-          # For 'open' type:
+          # type=open 时需要：
           menu: 'submenu_id'
-          # For 'command' type:
+          # type=command 时需要：
           commands:
             - 'spawn'
             - 'help'
 ```
 
-### Action Types
+### 2) Action 动作类型
 
-1. **open**: Opens another menu (submenu)
-   ```yaml
-   action:
-     type: 'open'
-     menu: 'teleport'
-   ```
+#### open：打开子菜单
+```yaml
+action:
+  type: 'open'
+  menu: 'teleport'
+```
 
-2. **command**: Executes commands as the player (automatically strips `/` prefix)
-   ```yaml
-   action:
-     type: 'command'
-     commands:
-       - 'spawn'
-       - 'warp village'
-   ```
+#### command：执行命令（以玩家身份执行）
+```yaml
+action:
+  type: 'command'
+  commands:
+    - 'spawn'
+    - 'warp village'
+```
 
-3. **back**: Returns to the previous menu or closes the menu if at root
-   ```yaml
-   action:
-     type: 'back'
-   ```
+- 建议在配置里 **不要写 `/` 前缀**（例如写 `spawn` 而不是 `/spawn`）
+- 即使写了 `/`，脚本一般也会自动去掉再执行（以你当前脚本实现为准）
 
-### Messages
+#### back：返回/关闭
+```yaml
+action:
+  type: 'back'
+```
+
+- 在子菜单：返回上一层
+- 在根菜单 `main`：关闭菜单
+
+---
+
+## 消息配置（misc）
 
 ```yaml
 misc:
@@ -85,65 +111,52 @@ misc:
   only-player: '&cThis command can only be executed by players!'
 ```
 
-## Example Configuration
+说明：
+- `command-message`：点击执行命令时提示（可选）
+- `no-permission`：点击无权限菜单项时提示
+- `only-player`：控制台执行命令时提示
 
-The default configuration includes a three-level menu structure:
-- **Main Menu** → Root menu with access to all sections
-- **Teleport Menu** → Warp commands and access to landmarks
-- **Landmarks Menu** → Specific landmark locations
-- **Commands Menu** → Various utility commands
+---
 
-## Permissions
+## 示例菜单结构说明
 
-- `menu.command` - Access to `/menu` command
-- Custom permissions can be added per item using the `permission:` field in the config
+默认示例配置一般包含至少三级结构，例如：
 
-## Installation
+- **Main Menu（main）** → 入口主菜单
+- **Teleport Menu（teleport）** → 传送相关命令 + 打开地标菜单
+- **Landmarks Menu（landmarks）** → 更深一层的地标命令
+- **Commands Menu（commands）** → 常用命令集合
 
-1. Install PySpigot on your server
-2. Place `menu.py` and `menu.yml` in your PySpigot scripts folder
-3. Restart the server or reload PySpigot
-4. Use `/menu` to open the menu
+你可以按需继续往下扩展更多层级，只需要在 `menus:` 下新增新的 `<menu_id>`，并用 `open` 指向它即可。
 
-## Notes
+---
 
-- Commands in the configuration should not include the `/` prefix (it will be automatically removed if present)
-- The menu automatically cleans up player state when they quit
-- All open menus are closed when the script is stopped/reloaded
-- Color codes support Minecraft's `&` format (e.g., `&a` for green)
+## 权限说明
 
-## Web 编辑器 / Web Editor
+- `menu.command`：允许玩家使用 `/menu`
+- 每个物品可通过 `permission:` 单独控制，例如：
+  - `menu.warp.shop`
+  - `menu.command.weather`
 
-本项目提供了一个在线图形化编辑器，用于方便地创建和编辑 `menu.yml` 配置文件。
+如果某个 item 没有写 `permission:`，则默认任何能打开菜单的玩家都可以点击。
 
-### 功能特性
+---
 
-- ✅ 导入/导出 YAML 配置文件
-- ✅ 可视化的槽位网格编辑
-- ✅ 多级菜单管理和关系查看
-- ✅ 智能配置验证（循环引用、孤儿菜单等）
-- ✅ 支持扩展字段（如 close-on-click、sound 等）
-- ✅ 完全中文界面
+## 安装与使用
 
-### 在线使用
+1. 在服务器安装 **PySpigot**
+2. 将脚本文件放入你的 PySpigot 项目/脚本目录（例如 `menu.py`）
+3. 将配置文件放入：
+   - `plugins/PySpigot/config/menu.yml`
+4. 重启服务器或重载 PySpigot
+5. 进入游戏执行：
+   - `/menu`
 
-访问 [PySpigot Menu 编辑器](https://soujyuhs16.github.io/pyspigot-menu/) 在线使用。
+---
 
-### 本地开发
+## 其他说明 / 注意事项
 
-```bash
-cd web
-npm install
-npm run dev
-```
-
-访问 http://localhost:5173 即可使用。
-
-### 构建和部署
-
-```bash
-cd web
-npm run build
-```
-
-更多详细信息请查看 [web/README.md](web/README.md)。
+- 菜单物品无法被玩家拖动或取走（点击事件已取消）
+- 玩家退出时会自动清理其菜单导航状态
+- 脚本停止/重载时会关闭所有当前打开的本插件菜单
+- 支持 Minecraft `&` 颜色代码（例如 `&a` 表示绿色）
