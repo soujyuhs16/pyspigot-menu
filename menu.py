@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pyspigot as ps
 
 from org.bukkit import Bukkit
@@ -10,6 +11,8 @@ from org.bukkit.event.inventory import InventoryClickEvent
 from org.bukkit.event.player import PlayerQuitEvent
 from org.bukkit.entity import Player
 from java.util import UUID
+from org.bukkit.configuration.file import YamlConfiguration
+from java.io import File
 
 # Global state
 config = None
@@ -18,8 +21,11 @@ inventories = {}  # menu_id -> inventory object
 title_to_menu = {}  # title -> menu_id mapping
 player_menu_stack = {}  # player UUID -> list of menu_ids
 messages = {}  # misc messages
+
 TITLE_PREFIX = "[Menu] "
 
+PROJECT_DIR_NAME = "projects/menu"  # 项目的目录名
+CONFIG_FILE_NAME = "menu.yml"  # 配置文件名（或许以后可以从插件配置文件中读取？）
 
 def load_item(config_section):
     """Load an ItemStack from config section"""
@@ -53,7 +59,22 @@ def load_menus():
     """Load all menus from configuration"""
     global menus, inventories, title_to_menu, messages
 
-    config = ps.config.loadConfig('menu.yml')
+    pyspigot_plugin = Bukkit.getPluginManager().getPlugin("PySpigot")  # 获取插件实例
+    pyspigot_root = pyspigot_plugin.getDataFolder()  # 获取插件数据文件夹
+    project_dir = File(pyspigot_root, PROJECT_DIR_NAME)  # 项目目录和插件目录
+    config_file = File(project_dir, CONFIG_FILE_NAME)  # 配置文件名字
+
+    # 如果没有目录，这里用于创建项目目录和插件目录
+    if not project_dir.exists():
+        project_dir.mkdirs()
+
+    # 如果没有配置文件，这里会在控制台返回文本
+    if not config_file.exists():
+        Bukkit.getConsoleSender().sendMessage("ERROR!Config file not found!QAQ")
+        return
+
+    # Load configuration
+    config = YamlConfiguration.loadConfiguration(config_file)
 
     # Load misc messages
     misc_section = config.getConfigurationSection('misc')
@@ -132,7 +153,8 @@ def load_menus():
 def open_menu(player, menu_id):
     """Open a menu for a player"""
     if menu_id not in inventories:
-        player.sendMessage(ChatColor.RED + "Menu not found: " + menu_id)
+        error_msg = "&6Menu not found: " + menu_id
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', error_msg))
         return
     
     player.openInventory(inventories[menu_id])
@@ -267,7 +289,8 @@ def on_command(sender, label, args):
             # Open the main menu
             open_menu(sender, 'main')
         else:
-            sender.sendMessage(ChatColor.RED + 'You do not have permission to execute this command!')
+            error_msg = "&6ERROR!You do not have permission to execute this command!QAQ"
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', error_msg))
     else:
         sender.sendMessage(messages['only-player'])
     
