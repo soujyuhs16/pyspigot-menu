@@ -29,13 +29,11 @@
 
 ## 配置文件位置（重要）
 
-本脚本通过 `ps.config.loadConfig('menu.yml')` 读取配置。**PySpigot 默认会从以下目录加载：**
+本脚本通过 `YamlConfiguration.loadConfiguration(config_file)` 读取配置。**PySpigot 默认会从以下目录加载：**
 
-- `plugins/PySpigot/config/menu.yml`
+- `plugins/PySpigot/projects/menu/menu.yml`
+  
 
-请务必将 `menu.yml` 放到上述目录。  
-如果把 `menu.yml` 放在 `plugins/PySpigot/projects/menu/`（项目目录）下，脚本通常 **不会自动读到**，从而导致 `menus` / `misc` 读取为空，出现报错或菜单无法打开。
-（后续再修）
 ---
 
 ## 配置格式说明（menu.yml）
