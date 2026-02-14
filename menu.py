@@ -24,7 +24,7 @@ messages = {}  # misc messages
 
 TITLE_PREFIX = "[Menu] "
 
-PROJECT_DIR_NAME = "projects/menu"  # 项目的目录名
+PROJECT_DIR_NAME = "configs/"  # 项目的目录名
 CONFIG_FILE_NAME = "menu.yml"  # 配置文件名（或许以后可以从插件配置文件中读取？）
 
 def load_item(config_section):
