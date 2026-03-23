@@ -12,7 +12,7 @@ from org.bukkit.event.player import PlayerQuitEvent
 from org.bukkit.entity import Player
 from java.util import UUID
 from org.bukkit.configuration.file import YamlConfiguration
-from java.io import File
+from java.io import File, ByteArrayOutputStream, DataOutputStream
 
 # Global state
 config = None
@@ -26,6 +26,13 @@ TITLE_PREFIX = "[Menu] "
 
 PROJECT_DIR_NAME = "configs/"  # 项目的目录名
 CONFIG_FILE_NAME = "menu.yml"  # 配置文件名（或许以后可以从插件配置文件中读取？）
+
+# Prefix used in menu.yml commands list to mark a command as a Velocity/BungeeCord proxy command.
+# Example: 'velocity: server lobby'
+VELOCITY_COMMAND_PREFIX = 'velocity:'
+
+# The standard BungeeCord plugin messaging channel used to communicate with the proxy.
+BUNGEECORD_CHANNEL = 'BungeeCord'
 
 def load_item(config_section):
     """Load an ItemStack from config section"""
@@ -198,16 +205,72 @@ def go_back(player):
         open_menu(player, previous_menu)
 
 
+def register_plugin_channels():
+    """Register the BungeeCord outgoing plugin messaging channel so the server
+    can forward commands to the Velocity/BungeeCord proxy."""
+    pyspigot_plugin = Bukkit.getPluginManager().getPlugin("PySpigot")
+    Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(pyspigot_plugin, BUNGEECORD_CHANNEL)
+
+
+def unregister_plugin_channels():
+    """Unregister the BungeeCord plugin messaging channel on script shutdown."""
+    pyspigot_plugin = Bukkit.getPluginManager().getPlugin("PySpigot")
+    Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(pyspigot_plugin, BUNGEECORD_CHANNEL)
+
+
+def send_velocity_command(player, command):
+    """Forward a Velocity/BungeeCord proxy command via Plugin Messaging Channel.
+
+    Supported proxy commands
+    ------------------------
+    server <serverName>  -- switches the player to the named server (uses the
+                            BungeeCord 'Connect' subchannel).
+
+    Any other proxy command is logged as unsupported because BungeeCord's
+    built-in plugin-messaging API does not expose a generic command subchannel.
+    A custom Velocity plugin on the proxy side would be required for those.
+    """
+    cmd = command.strip()
+
+    if cmd.lower().startswith('server '):
+        # Server-switch command → BungeeCord 'Connect' subchannel
+        server_name = cmd[len('server '):].strip()
+        out = ByteArrayOutputStream()
+        try:
+            dos = DataOutputStream(out)
+            dos.writeUTF('Connect')
+            dos.writeUTF(server_name)
+            pyspigot_plugin = Bukkit.getPluginManager().getPlugin("PySpigot")
+            player.sendPluginMessage(pyspigot_plugin, BUNGEECORD_CHANNEL, out.toByteArray())
+        finally:
+            out.close()
+    else:
+        Bukkit.getConsoleSender().sendMessage(
+            "[Menu] Unsupported Velocity command (no proxy handler): " + cmd
+        )
+
+
 def execute_commands(player, commands):
-    """Execute a list of commands as the player"""
+    """Execute a list of commands as the player.
+
+    Commands prefixed with 'velocity:' are forwarded to the Velocity/BungeeCord
+    proxy via Plugin Messaging Channel instead of being executed locally.
+    All other commands are executed as the player on the current Bukkit server.
+    """
     for command in commands:
-        # Strip leading '/' if present
         cmd = command.strip()
         if cmd.startswith('/'):
             cmd = cmd[1:]
-        
-        # Execute command
-        player.performCommand(cmd)
+
+        if cmd.lower().startswith(VELOCITY_COMMAND_PREFIX):
+            # Forward this command to the Velocity/BungeeCord proxy.
+            # Slice from the original string at the prefix boundary so that we
+            # correctly strip 'velocity:' regardless of the capitalisation used.
+            proxy_cmd = cmd[len(VELOCITY_COMMAND_PREFIX):].strip()
+            send_velocity_command(player, proxy_cmd)
+        else:
+            # Execute as a regular Bukkit command on the current server
+            player.performCommand(cmd)
 
 
 def on_inventory_click(event):
@@ -305,13 +368,19 @@ def stop():
             title = player.getOpenInventory().getTitle()
             if title in title_to_menu:
                 player.closeInventory()
-    
+
     # Clear all player menu stacks
     player_menu_stack.clear()
+
+    # Unregister the BungeeCord plugin messaging channel
+    unregister_plugin_channels()
 
 
 # Initialize
 load_menus()
+
+# Register the BungeeCord plugin messaging channel for Velocity command forwarding
+register_plugin_channels()
 
 # Register event listeners
 ps.listener_manager().registerListener(on_inventory_click, InventoryClickEvent)
