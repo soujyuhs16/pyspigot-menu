@@ -3,6 +3,19 @@
 #         menus.<menuId>.items."<slot>".item (material/amount/name/lore/glowing)
 #         menus.<menuId>.items."<slot>".permission (optional)
 #         menus.<menuId>.items."<slot>".action.type (open|command|back)
+#
+# Command types:
+#   Regular Bukkit commands are executed on the current server as the player:
+#     commands:
+#       - 'help'
+#       - 'spawn'
+#
+#   Velocity/BungeeCord proxy commands must be prefixed with 'velocity:'.
+#   The prefix is case-insensitive.  Only server-switch commands ('server <name>')
+#   are supported via the built-in BungeeCord plugin messaging channel:
+#     commands:
+#       - 'velocity: server lobby'
+#       - 'velocity: server survival'
 
 menus:
   main:
@@ -107,6 +120,22 @@ menus:
           commands:
             - 'warp pvp'
         permission: 'menu.warp.pvp'
+      '15':
+        item:
+          material: 'NETHER_STAR'
+          amount: 1
+          name: '&6&lHub Server'
+          lore:
+            - '&7Return to the hub/lobby server'
+            - '&8(Velocity proxy command)'
+          glowing: true
+        action:
+          type: 'command'
+          commands:
+            # 'velocity:' prefix forwards this to the Velocity/BungeeCord proxy.
+            # The proxy will switch the player to the server named 'lobby'.
+            - 'velocity: server lobby'
+        permission: 'menu.velocity.hub'
       '22':
         item:
           material: 'ARROW'
