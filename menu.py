@@ -12,6 +12,7 @@ from org.bukkit.event.player import PlayerQuitEvent
 from org.bukkit.entity import Player
 from java.util import UUID
 from org.bukkit.configuration.file import YamlConfiguration
+from org.bukkit.inventory.meta import SkullMeta
 from java.io import File, ByteArrayOutputStream, DataOutputStream
 
 # Global state
@@ -56,6 +57,19 @@ def load_item(config_section):
         if config_section.getBoolean('glowing'):
             item_meta.addEnchant(Enchantment.SHARPNESS, 1, True)
             item_meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+
+    # Apply skull owner when material is PLAYER_HEAD and 'player' key is set
+    if material == Material.PLAYER_HEAD and config_section.contains('player') and isinstance(item_meta, SkullMeta):
+        player_value = config_section.getString('player').strip()
+        try:
+            # Try to parse as UUID first
+            player_uuid = UUID.fromString(player_value)
+            offline_player = Bukkit.getOfflinePlayer(player_uuid)
+            item_meta.setOwningPlayer(offline_player)
+        except Exception:
+            # Fall back to player name lookup
+            offline_player = Bukkit.getOfflinePlayer(player_value)
+            item_meta.setOwningPlayer(offline_player)
 
     item.setItemMeta(item_meta)
 
