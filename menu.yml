@@ -1,8 +1,18 @@
 # Multi-level Menu Configuration
 # Format: menus.<menuId>.inventory.size/title
 #         menus.<menuId>.items."<slot>".item (material/amount/name/lore/glowing)
+#         menus.<menuId>.items."<slot>".item.player (optional, player name or UUID for PLAYER_HEAD)
 #         menus.<menuId>.items."<slot>".permission (optional)
 #         menus.<menuId>.items."<slot>".action.type (open|command|back)
+#
+# Player Head support:
+#   Set material to 'PLAYER_HEAD' and add a 'player' key with a player name or UUID:
+#     item:
+#       material: 'PLAYER_HEAD'
+#       player: 'Steve'                              # by player name
+#     item:
+#       material: 'PLAYER_HEAD'
+#       player: '8ec91fe6-4ab0-4ec3-ab00-b14c0b1fba5c'  # by UUID
 #
 # Command types:
 #   Regular Bukkit commands are executed on the current server as the player:
@@ -274,6 +284,28 @@ menus:
           commands:
             - 'me is using the menu'
             - 'help'
+      '15':
+        item:
+          material: 'PLAYER_HEAD'
+          player: 'Steve'
+          name: '&a&lSteve 的头颅'
+          lore:
+            - '&7Click to see Steve''s info'
+        action:
+          type: 'command'
+          commands:
+            - 'msg Steve Hello!'
+      '16':
+        item:
+          material: 'PLAYER_HEAD'
+          player: 'Notch'
+          name: '&6&lNotch 的头颅'
+          lore:
+            - '&7The creator of Minecraft'
+        action:
+          type: 'command'
+          commands:
+            - 'msg Notch Hello!'
       '22':
         item:
           material: 'ARROW'

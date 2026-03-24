@@ -11,6 +11,7 @@
   - `open`：打开子菜单
   - `command`：以玩家身份执行一条或多条命令
   - `back`：返回上一层；如果当前是根菜单（main），则关闭菜单
+- **玩家头颅材质**：支持 `PLAYER_HEAD` 材质并通过 `player:` 指定玩家名或 UUID 显示真实头颅
 - **物品独立权限**：每个菜单项可单独配置 `permission:`（可选）
 - **导航栈**：自动记录玩家的菜单打开顺序，实现自然的“返回”
 - **冲突避免**：菜单标题会加上 `[Menu]` 前缀，避免与其它插件的 GUI 标题冲突
@@ -95,6 +96,33 @@ action:
 
 - 在子菜单：返回上一层
 - 在根菜单 `main`：关闭菜单
+
+
+### 3) 玩家头颅材质（Player Head）
+
+将 `material` 设为 `PLAYER_HEAD` 并添加 `player:` 键即可使用真实玩家头颅：
+
+**按玩家名：**
+```yaml
+item:
+  material: 'PLAYER_HEAD'
+  player: 'Steve'
+  name: '&a&lSteve 的头颅'
+  lore:
+    - '&7点击查看 Steve 的信息'
+```
+
+**按 UUID：**
+```yaml
+item:
+  material: 'PLAYER_HEAD'
+  player: '8ec91fe6-4ab0-4ec3-ab00-b14c0b1fba5c'
+  name: '&c&l某玩家的头颅'
+```
+
+说明：
+- 若提供的字符串是合法 UUID 格式，则直接通过 UUID 查找 `OfflinePlayer`；否则视为玩家名。
+- 若玩家从未登录过该服务器，头颅可能显示为默认 Steve 皮肤（取决于服务器 `online-mode` 设置）。
 
 ---
 
